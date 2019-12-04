@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  面向接口开发  -->
+<mapper namespace="com.yh.dao.HouseMapper">
+    <resultMap type="House" id="houseMap">
+  		<id column="hid" property="hid"/>
+  		<result column="hname" property="hname"/>
+  		<result column="datea" property="datea"/>
+  		<collection property="shopings" ofType="Shoping" select="getShopingListHid" column="hid">
+  			<id column="sid" property="sid"/>
+  			<result column="sname" property="sname"/>
+  		</collection>
+  	</resultMap>
+  	
+  	<select id="getHouseList" resultMap="houseMap">
+  	   select * from house
+  	   <where>
+  	       <if test="null!=hname">
+  	         and hname like '%${hname}%'
+  	       </if>
+  	   </where>
+  	</select>
+  	
+   <select id="getShopingListHid" resultType="Shoping">
+  	   select * from h_s a left join shoping b on a.sid=b.sid where a.hid=#{hid}
+  	</select>
+  	<select id="getShopingList" resultType="Shoping">
+  	   select * from shoping
+  	 </select>
+  	<insert id="add" useGeneratedKeys="true" keyProperty="hid">
+  	    insert into house set hname=#{hname},datea=#{datea}
+  	 </insert>
+  	 
+  	 <insert id="addCenter">
+  	   insert into h_s set hid=#{hid},sid=#{sid}
+  	 </insert>
+  	
+  	<!-- 
+  	 <delete id="delAll">
+  	   delete from house where hid in (#{hid})
+  	 </delete>
+  	 
+  	 <select id="getHouseListByHId" resultType="houseMap">
+  	    select * from house where hid = #{hid}
+  	 </select>
+  	 
+  	 <select id="getShopingSid" resultType="houseMap">
+  	   select a.*,group_concat(b.sname)sname from shoping b left join h_s c on b.sid=c.sid left join house a on a.hid=c.hid where a.hid=#{hid}
+  	   group by a.hid
+  	 </select> -->
+</mapper>
